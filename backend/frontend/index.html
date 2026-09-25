@@ -2,23 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Malicious URL Detector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malicious URL & Phishing Detector</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>🛡️ Malicious URL & Phishing Detector</h1>
-        <div class="input-group">
-            <input type="text" id="urlInput" placeholder="Enter URL (e.g. http://paypal-verify-account.com)">
-            <button onclick="scanURL()">Scan Link</button>
-        </div>
-        <div id="resultCard" class="card hidden">
-            <h2 id="statusText"></h2>
-            <p><strong>Risk Level:</strong> <span id="riskLevel"></span></p>
-            <p><strong>Threat Confidence:</strong> <span id="confidenceScore"></span>%</p>
-            <ul id="flagList"></ul>
-        </div>
+        <header>
+            <div class="shield-icon">🛡️</div>
+            <h1>Malicious URL & Phishing Detector</h1>
+            <p>Analyze domain structure, lexical attributes, and heuristic indicators in real time.</p>
+        </header>
+
+        <main>
+            <div class="search-box">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="Enter URL to scan (e.g., http://paypal-login-update.com)" 
+                    required
+                >
+                <button id="scanBtn" onclick="scanURL()">Scan Link</button>
+            </div>
+
+            <div id="loader" class="loader hidden"></div>
+
+            <div id="resultCard" class="result-card hidden">
+                <div class="status-header">
+                    <span id="statusBadge" class="badge"></span>
+                    <h2 id="statusTitle"></h2>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="label">Risk Level</span>
+                        <span id="riskLevel" class="value"></span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Threat Confidence</span>
+                        <span id="confidenceScore" class="value"></span>
+                    </div>
+                </div>
+
+                <div class="flags-section">
+                    <h3>Detected Threat Flags</h3>
+                    <ul id="flagList"></ul>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Machine Learning & Lexical Analysis</p>
+        </footer>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
