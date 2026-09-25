@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Malicious URL Detector</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ Malicious URL & Phishing Detector</h1>
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Enter URL (e.g. http://paypal-verify-account.com)">
+            <button onclick="scanURL()">Scan Link</button>
+        </div>
+        <div id="resultCard" class="card hidden">
+            <h2 id="statusText"></h2>
+            <p><strong>Risk Level:</strong> <span id="riskLevel"></span></p>
+            <p><strong>Threat Confidence:</strong> <span id="confidenceScore"></span>%</p>
+            <ul id="flagList"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
