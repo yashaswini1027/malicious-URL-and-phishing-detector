@@ -16,17 +16,19 @@
         </header>
 
         <main>
-            <div class="search-box">
-                <input 
-                    type="url" 
-                    id="urlInput" 
-                    placeholder="Enter URL to scan (e.g., http://paypal-login-update.com)" 
+            <form id="scanForm" class="search-box">
+                <input
+                    type="url"
+                    id="urlInput"
+                    placeholder="Enter URL to scan (e.g., http://paypal-login-update.com)"
                     required
                 >
-                <button id="scanBtn" onclick="scanURL()">Scan Link</button>
-            </div>
+                <button type="submit" id="scanBtn">Scan Link</button>
+            </form>
 
             <div id="loader" class="loader hidden"></div>
+
+            <div id="errorBox" class="error-box hidden"></div>
 
             <div id="resultCard" class="result-card hidden">
                 <div class="status-header">

@@ -1,17 +1,25 @@
+document.getElementById('scanForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    scanURL();
+});
+
 async function scanURL() {
-    const urlInput = document.getElementById('urlInput').value.trim();
+    const urlInputEl = document.getElementById('urlInput');
+    const urlInput = urlInputEl.value.trim();
     const loader = document.getElementById('loader');
     const resultCard = document.getElementById('resultCard');
+    const errorBox = document.getElementById('errorBox');
     const scanBtn = document.getElementById('scanBtn');
 
     if (!urlInput) {
-        alert('Please enter a valid URL.');
+        showError('Please enter a valid URL.');
         return;
     }
 
     // UI Loading State
-    loader.classList.remove('hidden');
+    errorBox.classList.add('hidden');
     resultCard.classList.add('hidden');
+    loader.classList.remove('hidden');
     scanBtn.disabled = true;
 
     try {
@@ -25,19 +33,35 @@ async function scanURL() {
         });
 
         if (!response.ok) {
-            throw new Error('Server returned an error');
+            throw new Error(`Server returned status ${response.status}`);
         }
 
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseErr) {
+            throw new Error('Server did not return valid JSON.');
+        }
+
+        if (!data || !data.status || data.confidence_score === undefined || data.risk_level === undefined) {
+            throw new Error('Malformed response from server.');
+        }
+
         displayResults(data);
 
     } catch (error) {
-        alert('Error connecting to backend API. Ensure Flask (app.py) is running on port 5000.');
         console.error(error);
+        showError('Error connecting to backend API. Ensure Flask (app.py) is running on port 5000 and CORS is enabled. (' + error.message + ')');
     } finally {
         loader.classList.add('hidden');
         scanBtn.disabled = false;
     }
+}
+
+function showError(message) {
+    const errorBox = document.getElementById('errorBox');
+    errorBox.textContent = message;
+    errorBox.classList.remove('hidden');
 }
 
 function displayResults(data) {
@@ -48,12 +72,15 @@ function displayResults(data) {
     const confidenceScore = document.getElementById('confidenceScore');
     const flagList = document.getElementById('flagList');
 
-    // Populate data
+    // Normalize status so badge styling always matches CSS classes
+    const isMalicious = String(data.status).toLowerCase().includes('malic');
+    const normalizedClass = isMalicious ? 'malicious' : 'safe';
+
     statusBadge.textContent = data.status;
-    statusBadge.className = `badge ${data.status.toLowerCase()}`;
-    
-    statusTitle.textContent = data.status === 'Malicious' 
-        ? 'Threat Detected' 
+    statusBadge.className = `badge ${normalizedClass}`;
+
+    statusTitle.textContent = isMalicious
+        ? 'Threat Detected'
         : 'Legitimate Link';
 
     riskLevel.textContent = data.risk_level;
