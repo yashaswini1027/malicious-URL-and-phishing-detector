@@ -19,9 +19,6 @@ WHITELIST = ['google.com', 'github.com', 'microsoft.com', 'amazon.com', 'wikiped
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # request.get_json() returns None (instead of raising) if the body
-    # isn't valid JSON or Content-Type isn't set — guard against that
-    # before calling .get() on it, which was the main crash point.
     data = request.get_json(silent=True)
     if data is None:
         return jsonify({'error': 'Request body must be valid JSON'}), 400
@@ -50,6 +47,9 @@ def predict():
     try:
         raw_features = extract_features(url)
         features_df = pd.DataFrame([raw_features])
+        # Guarantee column order/names match exactly what the model was
+        # trained on, regardless of dict insertion order.
+        features_df = features_df.reindex(columns=model.feature_names_in_)
     except Exception as e:
         return jsonify({'error': f'Feature extraction failed: {e}'}), 500
 
@@ -62,17 +62,21 @@ def predict():
         return jsonify({'error': f'Model inference failed: {e}'}), 500
 
     # 4. Generate Threat Flags
-    # Use .get() with defaults instead of direct indexing so a missing
-    # key from extract_features() raises no KeyError.
     flags = []
-    if raw_features.get('has_ip_address'):
+    if raw_features.get('ip'):
         flags.append("Raw IP address used as hostname")
-    if raw_features.get('is_shortened'):
+    if raw_features.get('shortening_service'):
         flags.append("URL redirection/shortener detected")
-    if raw_features.get('suspicious_keyword_count', 0) > 0:
+    if raw_features.get('phish_hints', 0) > 0:
         flags.append("Contains sensitive action keywords (login, verify, update)")
-    if not raw_features.get('is_https', True):
-        flags.append("Insecure HTTP protocol")
+    if raw_features.get('login_form'):
+        flags.append("Page contains a login form")
+    if raw_features.get('iframe'):
+        flags.append("Page contains hidden iframe(s)")
+    if raw_features.get('punycode'):
+        flags.append("Domain uses punycode encoding (possible homograph attack)")
+    if raw_features.get('suspecious_tld'):
+        flags.append("Domain uses a top-level domain commonly linked to abuse")
 
     # 5. Formulate Result
     status = "Malicious" if prediction == 1 or malicious_probability > 0.6 else "Safe"
@@ -85,6 +89,11 @@ def predict():
         'risk_level': risk_level,
         'flags': flags
     })
+
+
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({'message': 'Phishing detector API is running. POST a URL to /predict.'})
 
 
 if __name__ == '__main__':
