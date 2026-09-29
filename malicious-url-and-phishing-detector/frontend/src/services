@@ -1,0 +1,18 @@
+import axios from 'axios';
+
+const API_URL = 'http://localhost:5000/predict';
+
+export const scanUrl = async (url) => {
+    try {
+        const response = await axios.post(API_URL, { url });
+        return response.data;
+    } catch (error) {
+        throw new Error('Error scanning URL: ' + error.message);
+    }
+};
+
+export const scanPageContent = async (content) => {
+    // Placeholder for future implementation of page content scanning
+    // This function will be implemented to analyze page contents for threats
+    throw new Error('Page content scanning is not yet implemented.');
+};
