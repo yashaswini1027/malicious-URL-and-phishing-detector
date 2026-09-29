@@ -24,7 +24,7 @@ async function scanURL() {
 
     try {
         // Send POST request to Flask backend API
-        const response = await fetch('http://127.0.0.1:5000/predict', {
+        const response = await fetch('/predict', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ async function scanURL() {
 
     } catch (error) {
         console.error(error);
-        showError('Error connecting to backend API. Ensure Flask (app.py) is running on port 5000 and CORS is enabled. (' + error.message + ')');
+        showError('Cannot reach the local scanner. Start Flask and open this page at http://127.0.0.1:5000. (' + error.message + ')');
     } finally {
         loader.classList.add('hidden');
         scanBtn.disabled = false;

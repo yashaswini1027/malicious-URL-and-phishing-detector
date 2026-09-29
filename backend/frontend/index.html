@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malicious URL & Phishing Detector</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -18,7 +17,8 @@
         <main>
             <form id="scanForm" class="search-box">
                 <input
-                    type="url"
+                    type="text"
+                    inputmode="url"
                     id="urlInput"
                     placeholder="Enter URL to scan (e.g., http://paypal-login-update.com)"
                     required
@@ -42,7 +42,7 @@
                         <span id="riskLevel" class="value"></span>
                     </div>
                     <div class="metric">
-                        <span class="label">Threat Confidence</span>
+                        <span class="label">Heuristic Risk Score</span>
                         <span id="confidenceScore" class="value"></span>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
         </main>
 
         <footer>
-            <p>Powered by Machine Learning & Lexical Analysis</p>
+            <p>Offline URL-pattern analysis</p>
         </footer>
     </div>
 
